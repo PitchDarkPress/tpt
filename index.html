@@ -1,1 +1,210 @@
-HELLO
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Proauthorist Translator</title>
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  min-height:100%;
+  background:#050607;
+  color:#d8922f;
+  font-family:"Courier New", monospace;
+}
+
+body{
+  padding:28px;
+}
+
+.app{
+  max-width:1180px;
+  margin:0 auto;
+  background:#020303;
+  border:1px solid rgba(216,146,47,.18);
+  padding:28px;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:22px;
+}
+
+.brand{
+  font-size:20px;
+  letter-spacing:1px;
+}
+
+.title{
+  text-align:center;
+  font-size:24px;
+  letter-spacing:2px;
+  margin-bottom:24px;
+  font-weight:bold;
+}
+
+.box{
+  width:100%;
+  min-height:260px;
+  background:#010202;
+  color:#d7d7d7;
+  border:1px solid rgba(216,146,47,.72);
+  padding:28px;
+  font-size:20px;
+  line-height:1.55;
+  resize:vertical;
+  outline:none;
+}
+
+.box::placeholder{
+  color:#777b84;
+  opacity:.7;
+}
+
+.output{
+  color:#b6d86a;
+  white-space:pre-wrap;
+  min-height:260px;
+}
+
+.controls{
+  display:flex;
+  justify-content:flex-end;
+  margin:18px 0 24px;
+}
+
+button{
+  background:#040404;
+  color:#d8922f;
+  border:1px solid rgba(216,146,47,.8);
+  padding:14px 42px;
+  font-family:"Courier New", monospace;
+  font-size:26px;
+  font-weight:bold;
+  cursor:pointer;
+  letter-spacing:1px;
+}
+
+button:hover{
+  box-shadow:0 0 16px rgba(216,146,47,.35);
+}
+
+.status{
+  text-align:right;
+  color:#22e640;
+  font-size:18px;
+  min-height:28px;
+  margin-top:18px;
+}
+
+.footer{
+  text-align:center;
+  margin-top:42px;
+  font-size:14px;
+  line-height:1.6;
+  color:#d8922f;
+  opacity:.85;
+}
+
+@media(max-width:700px){
+  body{padding:12px}
+  .app{padding:18px}
+  .header{display:block}
+  .title{font-size:19px}
+  .box{font-size:17px;min-height:220px}
+  button{width:100%}
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="header">
+    <div class="brand">Pitch Dark R&amp;D</div>
+    <div>tpt.pitchdarkrandd.com</div>
+  </div>
+
+  <div class="title">THE PROAUTHORIST TRANSLATOR</div>
+
+  <textarea
+    id="input"
+    class="box"
+    spellcheck="true"
+    placeholder="TPT translates human language into a form AI can understand."></textarea>
+
+  <div class="controls">
+    <button onclick="translateText()">DONE</button>
+  </div>
+
+  <div id="output" class="box output">Translation...</div>
+
+  <div id="status" class="status"></div>
+
+  <div class="footer">
+    This app was built by Pitch Dark Research &amp; Development as a Proauthorist project. Declared, as always.<br>
+    Pitch Dark R&amp;D — copyright — © 2026
+  </div>
+
+</div>
+
+<script>
+function toSnake(text){
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g,"")
+    .trim()
+    .replace(/\s+/g,"_");
+}
+
+function translateText(){
+  const input = document.getElementById("input").value.trim();
+  const output = document.getElementById("output");
+  const status = document.getElementById("status");
+
+  if(!input){
+    output.textContent = "Translation...";
+    status.textContent = "";
+    return;
+  }
+
+  const lines = input
+    .split(/\n+/)
+    .map(l => l.trim())
+    .filter(Boolean);
+
+  let result = [];
+  result.push("PROJECT=TPT");
+  result.push("MODE=human_to_ai_translation");
+  result.push("INPUT=human_language");
+  result.push("INTENT=preserve");
+  result.push("");
+
+  lines.forEach((line, index) => {
+    result.push("STATEMENT_" + String(index + 1).padStart(2,"0") + "=" + toSnake(line));
+  });
+
+  result.push("");
+  result.push("CORE_RULE=do_not_rewrite_intent");
+  result.push("SPELLING_ONLY=true");
+  result.push("READY_FOR_AI=true");
+
+  const finalText = result.join("\n");
+  output.textContent = finalText;
+
+  navigator.clipboard.writeText(finalText).then(() => {
+    status.textContent = "Translation copied. Paste to AI...";
+  }).catch(() => {
+    status.textContent = "Translation ready. Copy manually.";
+  });
+}
+</script>
+
+</body>
+</html>
