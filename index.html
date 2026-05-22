@@ -1,143 +1,147 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Proauthorist Translator</title>
 
 <style>
+
 *{
-  box-sizing:border-box;
+box-sizing:border-box;
 }
 
 html,body{
-  margin:0;
-  background:#050607;
-  color:#d8922f;
-  font-family:"Courier New", monospace;
-  overflow:auto;
+margin:0;
+background:#050607;
+color:#d8922f;
+font-family:"Courier New",monospace;
+overflow:auto;
 }
 
 body{
-  padding:20px;
+padding:18px;
 }
 
 .app{
-  width:min(920px,100%);
-  margin:0 auto;
-  background:#020303;
-  border:1px solid rgba(216,146,47,.18);
-  padding:24px;
+width:min(920px,100%);
+margin:0 auto;
+background:#020303;
+border:1px solid rgba(216,146,47,.18);
+padding:22px;
 }
 
 .title{
-  text-align:center;
-  font-size:22px;
-  letter-spacing:2px;
-  margin-bottom:22px;
-  color:#d8922f;
+text-align:center;
+font-size:20px;
+letter-spacing:3px;
+margin-bottom:20px;
+color:#d8922f;
 }
 
 .box{
-  width:100%;
-  min-height:190px;
-  background:#010202;
-  color:#d7d7d7;
-  border:1px solid rgba(216,146,47,.65);
-  padding:22px;
-  font-size:18px;
-  line-height:1.5;
-  resize:vertical;
-  outline:none;
+width:100%;
+min-height:190px;
+background:#010202;
+color:#f1f1f1;
+border:1px solid rgba(216,146,47,.62);
+padding:22px;
+font-size:18px;
+line-height:1.6;
+resize:vertical;
+outline:none;
 }
 
 .box::placeholder{
-  color:#70757d;
-  opacity:.7;
+color:#737882;
+opacity:.72;
 }
 
 .output{
-  color:#b6d86a;
-  white-space:pre-wrap;
-  min-height:190px;
+color:#b6d86a;
+white-space:pre-wrap;
+word-break:break-word;
+overflow-wrap:anywhere;
+min-height:190px;
 }
 
 .controls{
-  display:flex;
-  justify-content:flex-end;
-  gap:12px;
-  margin:16px 0 18px;
+display:flex;
+justify-content:flex-end;
+gap:10px;
+margin:14px 0 16px;
 }
 
 button{
-  background:#040404;
-  color:#d8922f;
-  border:1px solid rgba(216,146,47,.55);
-  padding:10px 24px;
-  font-family:"Courier New", monospace;
-  font-size:18px;
-  cursor:pointer;
-  letter-spacing:1px;
-  transition:.2s ease;
+background:#040404;
+color:#d8922f;
+border:1px solid rgba(216,146,47,.5);
+padding:8px 18px;
+font-family:"Courier New",monospace;
+font-size:16px;
+cursor:pointer;
+letter-spacing:1px;
+transition:.2s ease;
 }
 
 button:hover{
-  border-color:#d8922f;
-  box-shadow:0 0 10px rgba(216,146,47,.18);
+border-color:#d8922f;
+box-shadow:0 0 8px rgba(216,146,47,.16);
 }
 
 .status{
-  text-align:right;
-  color:#22e640;
-  font-size:16px;
-  min-height:24px;
-  margin-top:14px;
-  opacity:0;
-  transition:.2s ease;
+text-align:right;
+color:#22e640;
+font-size:15px;
+margin-top:14px;
+opacity:0;
+transition:.2s ease;
+min-height:22px;
 }
 
 .status.show{
-  opacity:1;
+opacity:1;
 }
 
 .footer{
-  text-align:center;
-  margin-top:28px;
-  font-size:12px;
-  line-height:1.6;
-  color:#d8922f;
-  opacity:.7;
+text-align:center;
+margin-top:26px;
+font-size:12px;
+line-height:1.7;
+color:#d8922f;
+opacity:.72;
 }
 
 @media(max-width:700px){
 
-  body{
-    padding:10px;
-  }
-
-  .app{
-    padding:16px;
-  }
-
-  .title{
-    font-size:18px;
-  }
-
-  .box{
-    font-size:16px;
-    min-height:160px;
-    padding:18px;
-  }
-
-  .controls{
-    justify-content:space-between;
-  }
-
-  button{
-    width:48%;
-    font-size:16px;
-  }
+body{
+padding:10px;
 }
+
+.app{
+padding:16px;
+}
+
+.title{
+font-size:17px;
+}
+
+.box{
+font-size:16px;
+padding:18px;
+min-height:160px;
+}
+
+.controls{
+justify-content:space-between;
+}
+
+button{
+width:32%;
+font-size:14px;
+}
+}
+
 </style>
 </head>
 
@@ -145,96 +149,144 @@ button:hover{
 
 <div class="app">
 
-  <div class="title">
-    THE PROAUTHORIST TRANSLATOR
-  </div>
+<div class="title">
+THE PROAUTHORIST TRANSLATOR
+</div>
 
-  <textarea
-    id="input"
-    class="box"
-    spellcheck="true"
-    placeholder="TPT translates human language into a form AI can understand."></textarea>
+<textarea
+id="input"
+class="box"
+lang="en-GB"
+spellcheck="true"
+placeholder="TPT translates human language into a form AI can understand."></textarea>
 
-  <div class="controls">
-    <button onclick="clearAll()">CLEAR</button>
-    <button onclick="translateText()">DONE</button>
-  </div>
+<div class="controls">
 
-  <div id="output" class="box output"></div>
+<button onclick="undoText()">
+UNDO
+</button>
 
-  <div id="status" class="status">
-    Translation copied. Paste to AI...
-  </div>
+<button onclick="clearAll()">
+CLEAR
+</button>
 
-  <div class="footer">
-    Declared collaboration. The medium evolves, the strangeness remains.
-  </div>
+<button onclick="translateText()">
+DONE
+</button>
+
+</div>
+
+<div id="output" class="box output"></div>
+
+<div id="status" class="status">
+Translation copied. Paste to AI...
+</div>
+
+<div class="footer">
+Declared collaboration. The medium evolves, the strangeness remains.<br>
+Pitch Dark Research &amp; Development — © 2026
+</div>
 
 </div>
 
 <script>
+
+let previousText = "";
+
 function toSnake(text){
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g,"")
-    .trim()
-    .replace(/\s+/g,"_");
+
+return text
+.toLowerCase()
+.replace(/[^a-z0-9\s]/g,"")
+.trim()
+.replace(/\s+/g,"_");
+
 }
 
 function translateText(){
 
-  const input = document.getElementById("input").value.trim();
-  const output = document.getElementById("output");
-  const status = document.getElementById("status");
+const inputField = document.getElementById("input");
+const input = inputField.value.trim();
 
-  if(!input){
-    output.textContent = "";
-    status.classList.remove("show");
-    return;
-  }
+const output = document.getElementById("output");
+const status = document.getElementById("status");
 
-  const lines = input
-    .split(/\n+/)
-    .map(l => l.trim())
-    .filter(Boolean);
+if(!input){
 
-  let result = [];
+output.textContent = "";
+status.classList.remove("show");
+return;
 
-  result.push("PROJECT=TPT");
-  result.push("MODE=human_to_ai_translation");
-  result.push("INPUT=human_language");
-  result.push("INTENT=preserve");
-  result.push("");
+}
 
-  lines.forEach((line,index)=>{
-    result.push(
-      "STATEMENT_" +
-      String(index + 1).padStart(2,"0") +
-      "=" +
-      toSnake(line)
-    );
-  });
+previousText = inputField.value;
 
-  result.push("");
-  result.push("CORE_RULE=do_not_rewrite_intent");
-  result.push("SPELLING_ONLY=true");
-  result.push("READY_FOR_AI=true");
+const lines = input
+.split(/\n+/)
+.map(l => l.trim())
+.filter(Boolean);
 
-  const finalText = result.join("\n");
+let result = [];
 
-  output.textContent = finalText;
+result.push("PROJECT=TPT");
+result.push("MODE=human_to_ai_translation");
+result.push("INPUT=human_language");
+result.push("INTENT=preserve");
+result.push("");
 
-  navigator.clipboard.writeText(finalText).then(()=>{
-    status.classList.add("show");
-  });
+lines.forEach((line,index)=>{
+
+result.push(
+"STATEMENT_" +
+String(index + 1).padStart(2,"0") +
+"=" +
+toSnake(line)
+);
+
+});
+
+result.push("");
+result.push("CORE_RULE=do_not_rewrite_intent");
+result.push("SPELLING_ONLY=true");
+result.push("READY_FOR_AI=true");
+
+const finalText = result.join("\n");
+
+output.textContent = finalText;
+
+navigator.clipboard.writeText(finalText).then(()=>{
+
+status.classList.add("show");
+
+}).catch(()=>{
+
+status.textContent = "Translation ready. Copy manually.";
+status.classList.add("show");
+
+});
+
 }
 
 function clearAll(){
 
-  document.getElementById("input").value = "";
-  document.getElementById("output").textContent = "";
-  document.getElementById("status").classList.remove("show");
+const inputField = document.getElementById("input");
+
+previousText = inputField.value;
+
+inputField.value = "";
+
+document.getElementById("output").textContent = "";
+
+document.getElementById("status").classList.remove("show");
+
 }
+
+function undoText(){
+
+document.getElementById("input").value = previousText;
+
+}
+
 </script>
 
 </body>
