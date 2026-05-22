@@ -4,183 +4,46 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Proauthorist Translator</title>
-
 <style>
-
-*{
-box-sizing:border-box;
-}
-
-html,body{
-margin:0;
-background:#050607;
-color:#d8922f;
-font-family:"Courier New",monospace;
-overflow:auto;
-}
-
-body{
-padding:18px;
-}
-
-.app{
-width:min(920px,100%);
-margin:0 auto;
-background:#020303;
-border:1px solid rgba(216,146,47,.18);
-padding:22px;
-}
-
-.title{
-text-align:center;
-font-size:20px;
-letter-spacing:3px;
-margin-bottom:20px;
-color:#d8922f;
-}
-
-.box{
-width:100%;
-min-height:190px;
-background:#010202;
-color:#f1f1f1;
-border:1px solid rgba(216,146,47,.62);
-padding:22px;
-font-size:18px;
-line-height:1.6;
-resize:vertical;
-outline:none;
-}
-
-.box::placeholder{
-color:#737882;
-opacity:.72;
-}
-
-.output{
-color:#b6d86a;
-white-space:pre-wrap;
-word-break:break-word;
-overflow-wrap:anywhere;
-min-height:190px;
-}
-
-.controls{
-display:flex;
-justify-content:flex-end;
-gap:10px;
-margin:14px 0 16px;
-}
-
-button{
-background:#040404;
-color:#d8922f;
-border:1px solid rgba(216,146,47,.5);
-padding:8px 18px;
-font-family:"Courier New",monospace;
-font-size:16px;
-cursor:pointer;
-letter-spacing:1px;
-transition:.2s ease;
-}
-
-button:hover{
-border-color:#d8922f;
-box-shadow:0 0 8px rgba(216,146,47,.16);
-}
-
-.status{
-text-align:right;
-color:#22e640;
-font-size:15px;
-margin-top:14px;
-opacity:0;
-transition:.2s ease;
-min-height:22px;
-}
-
-.status.show{
-opacity:1;
-}
-
-.footer{
-text-align:center;
-margin-top:26px;
-font-size:12px;
-line-height:1.7;
-color:#d8922f;
-opacity:.72;
-}
-
+*{box-sizing:border-box}
+html,body{margin:0;background:#050607;color:#d8922f;font-family:"Courier New",monospace}
+body{padding:18px}
+.app{width:min(880px,100%);margin:0 auto;background:#020303;border:1px solid rgba(216,146,47,.18);padding:22px}
+.title{text-align:center;font-size:20px;letter-spacing:3px;margin-bottom:20px}
+.box{width:100%;min-height:180px;background:#010202;color:#f1f1f1;border:1px solid rgba(216,146,47,.62);padding:20px;font-size:17px;line-height:1.55;resize:vertical;outline:none}
+.box::placeholder{color:#737882;opacity:.72}
+.output{color:#b6d86a;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere}
+.controls{display:flex;justify-content:flex-end;gap:9px;margin:13px 0 15px}
+button{background:#040404;color:#d8922f;border:1px solid rgba(216,146,47,.5);padding:7px 15px;font-family:"Courier New",monospace;font-size:14px;cursor:pointer;letter-spacing:1px}
+button:hover{border-color:#d8922f;box-shadow:0 0 8px rgba(216,146,47,.16)}
+.status{text-align:right;color:#22e640;font-size:14px;margin-top:12px;opacity:0;min-height:20px}
+.status.show{opacity:1}
+.footer{text-align:center;margin-top:24px;font-size:12px;line-height:1.7;color:#d8922f;opacity:.72}
 @media(max-width:700px){
-
-body{
-padding:10px;
+body{padding:10px}.app{padding:15px}.title{font-size:16px}.box{font-size:15px;min-height:150px}
+button{width:32%;font-size:13px;padding:7px 8px}
+.controls{justify-content:space-between}
 }
-
-.app{
-padding:16px;
-}
-
-.title{
-font-size:17px;
-}
-
-.box{
-font-size:16px;
-padding:18px;
-min-height:160px;
-}
-
-.controls{
-justify-content:space-between;
-}
-
-button{
-width:32%;
-font-size:14px;
-}
-}
-
 </style>
 </head>
 
 <body>
-
 <div class="app">
 
-<div class="title">
-THE PROAUTHORIST TRANSLATOR
-</div>
+<div class="title">THE PROAUTHORIST TRANSLATOR</div>
 
-<textarea
-id="input"
-class="box"
-lang="en-GB"
-spellcheck="true"
+<textarea id="input" class="box" lang="en-GB" spellcheck="true"
 placeholder="TPT translates human language into a form AI can understand."></textarea>
 
 <div class="controls">
-
-<button onclick="undoText()">
-UNDO
-</button>
-
-<button onclick="clearAll()">
-CLEAR
-</button>
-
-<button onclick="translateText()">
-DONE
-</button>
-
+<button onclick="undoText()">UNDO</button>
+<button onclick="clearAll()">CLEAR</button>
+<button onclick="translateText()">DONE</button>
 </div>
 
 <div id="output" class="box output"></div>
 
-<div id="status" class="status">
-Translation copied. Paste to AI...
-</div>
+<div id="status" class="status">Compressed. Copied. Paste to AI...</div>
 
 <div class="footer">
 Declared collaboration. The medium evolves, the strangeness remains.<br>
@@ -190,103 +53,161 @@ Pitch Dark Research &amp; Development — © 2026
 </div>
 
 <script>
-
 let previousText = "";
 
-function toSnake(text){
+const dictionary = [
+  ["can you build it", "BUILD"],
+  ["build it", "BUILD"],
+  ["make it", "BUILD"],
+  ["do it", "DO"],
+  ["go for it", "DO"],
+  ["give me the whole code", "FULL_CODE"],
+  ["the whole code please", "FULL_CODE"],
+  ["whole code", "FULL_CODE"],
 
-return text
-.toLowerCase()
-.replace(/[^a-z0-9\s]/g,"")
-.trim()
-.replace(/\s+/g,"_");
+  ["make it smaller", "SIZE--"],
+  ["slightly smaller", "SIZE-"],
+  ["make it bigger", "SIZE++"],
+  ["slightly bigger", "SIZE+"],
 
+  ["move it up", "MOVE^"],
+  ["move it down", "MOVEv"],
+  ["move it left", "MOVE<"],
+  ["move it right", "MOVE>"],
+  ["higher", "Y+"],
+  ["lower", "Y-"],
+  ["closer", "Z+"],
+  ["further back", "Z-"],
+  ["too far forward", "Z-"],
+  ["too far back", "Z+"],
+
+  ["add undo", "UNDO+"],
+  ["undo button", "UNDO+"],
+  ["add clear", "CLEAR+"],
+  ["clear button", "CLEAR+"],
+  ["done button", "DONE_BTN"],
+
+  ["restore copyright", "COPYRIGHT+"],
+  ["copyright has gone", "COPYRIGHT+"],
+  ["copyright hads gone", "COPYRIGHT+"],
+  ["keep the text", "KEEP_TEXT"],
+  ["keep the footer", "KEEP_FOOTER"],
+  ["spell checker is not working", "SPELLCHECK_FIX"],
+  ["spell cheaker is not working", "SPELLCHECK_FIX"],
+  ["spellcheck is not working", "SPELLCHECK_FIX"],
+
+  ["dont rewrite", "NO_REWRITE"],
+  ["do not rewrite", "NO_REWRITE"],
+  ["preserve intent", "INTENT=KEEP"],
+  ["spelling only", "SPELL_ONLY"]
+];
+
+function cleanText(text){
+  return text
+    .toLowerCase()
+    .replace(/[’']/g,"")
+    .replace(/[^a-z0-9\s]/g," ")
+    .replace(/\s+/g," ")
+    .trim();
+}
+
+function compressLine(line){
+  let cleaned = cleanText(line);
+  let found = [];
+
+  dictionary.forEach(pair=>{
+    if(cleaned.includes(pair[0])){
+      if(!found.includes(pair[1])) found.push(pair[1]);
+      cleaned = cleaned.replace(pair[0]," ");
+    }
+  });
+
+  cleaned = cleaned
+    .replace(/\bplease\b/g,"")
+    .replace(/\bcan\b/g,"")
+    .replace(/\byou\b/g,"")
+    .replace(/\bjust\b/g,"")
+    .replace(/\ba\b/g,"")
+    .replace(/\bthe\b/g,"")
+    .replace(/\bit\b/g,"")
+    .replace(/\bwe\b/g,"")
+    .replace(/\balso\b/g,"")
+    .replace(/\bneed\b/g,"")
+    .replace(/\bto\b/g,"")
+    .replace(/\band\b/g,"")
+    .replace(/\bas\b/g,"")
+    .replace(/\bi\b/g,"")
+    .replace(/\bthis\b/g,"")
+    .replace(/\bthat\b/g,"")
+    .replace(/\bsome\b/g,"")
+    .replace(/\btext\b/g,"")
+    .replace(/\s+/g," ")
+    .trim();
+
+  if(cleaned){
+    found.push(
+      cleaned
+      .toUpperCase()
+      .replace(/\s+/g,"_")
+    );
+  }
+
+  return found.join("\n");
 }
 
 function translateText(){
+  const inputField = document.getElementById("input");
+  const raw = inputField.value.trim();
+  const output = document.getElementById("output");
+  const status = document.getElementById("status");
 
-const inputField = document.getElementById("input");
-const input = inputField.value.trim();
+  if(!raw){
+    output.textContent = "";
+    status.classList.remove("show");
+    return;
+  }
 
-const output = document.getElementById("output");
-const status = document.getElementById("status");
+  previousText = inputField.value;
 
-if(!input){
+  const lines = raw.split(/\n+/).map(l=>l.trim()).filter(Boolean);
+  let result = [];
 
-output.textContent = "";
-status.classList.remove("show");
-return;
+  lines.forEach(line=>{
+    const compressed = compressLine(line);
+    if(compressed) result.push(compressed);
+  });
 
-}
+  if(!result.length){
+    result.push("INTENT=UNCLEAR");
+  }
 
-previousText = inputField.value;
+  result.push("NO_REWRITE");
+  result.push("SPELL_ONLY");
 
-const lines = input
-.split(/\n+/)
-.map(l => l.trim())
-.filter(Boolean);
+  const finalText = [...new Set(result)].join("\n");
 
-let result = [];
+  output.textContent = finalText;
 
-result.push("PROJECT=TPT");
-result.push("MODE=human_to_ai_translation");
-result.push("INPUT=human_language");
-result.push("INTENT=preserve");
-result.push("");
-
-lines.forEach((line,index)=>{
-
-result.push(
-"STATEMENT_" +
-String(index + 1).padStart(2,"0") +
-"=" +
-toSnake(line)
-);
-
-});
-
-result.push("");
-result.push("CORE_RULE=do_not_rewrite_intent");
-result.push("SPELLING_ONLY=true");
-result.push("READY_FOR_AI=true");
-
-const finalText = result.join("\n");
-
-output.textContent = finalText;
-
-navigator.clipboard.writeText(finalText).then(()=>{
-
-status.classList.add("show");
-
-}).catch(()=>{
-
-status.textContent = "Translation ready. Copy manually.";
-status.classList.add("show");
-
-});
-
+  navigator.clipboard.writeText(finalText).then(()=>{
+    status.textContent = "Compressed. Copied. Paste to AI...";
+    status.classList.add("show");
+  }).catch(()=>{
+    status.textContent = "Compressed. Copy manually.";
+    status.classList.add("show");
+  });
 }
 
 function clearAll(){
-
-const inputField = document.getElementById("input");
-
-previousText = inputField.value;
-
-inputField.value = "";
-
-document.getElementById("output").textContent = "";
-
-document.getElementById("status").classList.remove("show");
-
+  const inputField = document.getElementById("input");
+  previousText = inputField.value;
+  inputField.value = "";
+  document.getElementById("output").textContent = "";
+  document.getElementById("status").classList.remove("show");
 }
 
 function undoText(){
-
-document.getElementById("input").value = previousText;
-
+  document.getElementById("input").value = previousText;
 }
-
 </script>
 
 </body>
