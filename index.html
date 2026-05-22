@@ -4,82 +4,195 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Proauthorist Translator</title>
+
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;background:#050607;color:#d8922f;font-family:"Courier New",monospace}
+
+html,body{
+  margin:0;
+  background:#050607;
+  color:#d8922f;
+  font-family:"Courier New",monospace;
+}
+
 body{padding:18px}
-.app{width:min(880px,100%);margin:0 auto;background:#020303;border:1px solid rgba(216,146,47,.18);padding:22px}
-.title{text-align:center;font-size:20px;letter-spacing:3px;margin-bottom:20px}
-.box{width:100%;min-height:180px;background:#010202;color:#f1f1f1;border:1px solid rgba(216,146,47,.62);padding:20px;font-size:17px;line-height:1.55;resize:vertical;outline:none}
-.box::placeholder{color:#737882;opacity:.72}
-.output{color:#b6d86a;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere}
-.controls{display:flex;justify-content:flex-end;gap:9px;margin:13px 0 15px}
-button{background:#040404;color:#d8922f;border:1px solid rgba(216,146,47,.5);padding:7px 15px;font-family:"Courier New",monospace;font-size:14px;cursor:pointer;letter-spacing:1px}
-button:hover{border-color:#d8922f;box-shadow:0 0 8px rgba(216,146,47,.16)}
-.status{text-align:right;color:#22e640;font-size:14px;margin-top:12px;opacity:0;min-height:20px}
+
+.app{
+  width:min(860px,100%);
+  margin:0 auto;
+  background:#020303;
+  border:1px solid rgba(216,146,47,.18);
+  padding:20px;
+}
+
+.title{
+  text-align:center;
+  font-size:19px;
+  letter-spacing:3px;
+  margin-bottom:18px;
+}
+
+.box{
+  width:100%;
+  height:170px;
+  background:#010202;
+  color:#f1f1f1;
+  border:1px solid rgba(216,146,47,.62);
+  padding:18px;
+  font-size:16px;
+  line-height:1.5;
+  resize:none;
+  outline:none;
+  overflow-y:auto;
+}
+
+.box::placeholder{
+  color:#737882;
+  opacity:.72;
+}
+
+.output{
+  color:#b6d86a;
+  white-space:pre-wrap;
+  word-break:break-word;
+  overflow-wrap:anywhere;
+}
+
+.controls{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin:12px 0 14px;
+}
+
+button{
+  background:#040404;
+  color:#d8922f;
+  border:1px solid rgba(216,146,47,.5);
+  padding:6px 13px;
+  font-family:"Courier New",monospace;
+  font-size:13px;
+  cursor:pointer;
+  letter-spacing:1px;
+}
+
+button:hover{
+  border-color:#d8922f;
+  box-shadow:0 0 8px rgba(216,146,47,.16);
+}
+
+.status{
+  text-align:right;
+  color:#22e640;
+  font-size:13px;
+  margin-top:10px;
+  opacity:0;
+  min-height:18px;
+}
+
 .status.show{opacity:1}
-.footer{text-align:center;margin-top:24px;font-size:12px;line-height:1.7;color:#d8922f;opacity:.72}
+
+.footer{
+  text-align:center;
+  margin-top:22px;
+  font-size:12px;
+  line-height:1.7;
+  color:#d8922f;
+  opacity:.72;
+}
+
 @media(max-width:700px){
-body{padding:10px}.app{padding:15px}.title{font-size:16px}.box{font-size:15px;min-height:150px}
-button{width:32%;font-size:13px;padding:7px 8px}
-.controls{justify-content:space-between}
+  body{padding:10px}
+  .app{padding:14px}
+  .title{font-size:16px}
+  .box{height:155px;font-size:15px;padding:15px}
+  button{width:32%;font-size:12px;padding:7px 6px}
+  .controls{justify-content:space-between}
 }
 </style>
 </head>
 
 <body>
+
 <div class="app">
 
-<div class="title">THE PROAUTHORIST TRANSLATOR</div>
+  <div class="title">THE PROAUTHORIST TRANSLATOR</div>
 
-<textarea id="input" class="box" lang="en-GB" spellcheck="true"
-placeholder="TPT translates human language into a form AI can understand."></textarea>
+  <textarea
+    id="input"
+    class="box"
+    lang="en-GB"
+    spellcheck="true"
+    placeholder="TPT translates human language into a form AI can understand."></textarea>
 
-<div class="controls">
-<button onclick="undoText()">UNDO</button>
-<button onclick="clearAll()">CLEAR</button>
-<button onclick="translateText()">DONE</button>
-</div>
+  <div class="controls">
+    <button onclick="undoText()">UNDO</button>
+    <button onclick="clearAll()">CLEAR</button>
+    <button onclick="translateText()">DONE</button>
+  </div>
 
-<div id="output" class="box output"></div>
+  <div id="output" class="box output"></div>
 
-<div id="status" class="status">Compressed. Copied. Paste to AI...</div>
+  <div id="status" class="status">Compressed. Copied. Paste to AI...</div>
 
-<div class="footer">
-Declared collaboration. The medium evolves, the strangeness remains.<br>
-Pitch Dark Research &amp; Development — © 2026
-</div>
+  <div class="footer">
+    Declared collaboration. The medium evolves, the strangeness remains.<br>
+    Pitch Dark Research &amp; Development — © 2026
+  </div>
 
 </div>
 
 <script>
 let previousText = "";
 
-const dictionary = [
-  ["can you build it", "BUILD"],
-  ["build it", "BUILD"],
-  ["make it", "BUILD"],
-  ["do it", "DO"],
-  ["go for it", "DO"],
-  ["give me the whole code", "FULL_CODE"],
-  ["the whole code please", "FULL_CODE"],
+const phraseMap = [
+  ["spell checker is not working", "SPELLCHECK_NOT_WORKING"],
+  ["spell cheacker is not working", "SPELLCHECK_NOT_WORKING"],
+  ["spell cheaker is not working", "SPELLCHECK_NOT_WORKING"],
+  ["spellcheck is not working", "SPELLCHECK_NOT_WORKING"],
+  ["not working", "NOT_WORKING"],
+
+  ["i don't really care", "DONT_CARE"],
+  ["i dont really care", "DONT_CARE"],
+  ["dont really care", "DONT_CARE"],
+  ["don't really care", "DONT_CARE"],
+  ["dont care", "DONT_CARE"],
+
+  ["unless it's an easy fix", "UNLESS_EASY_FIX"],
+  ["unless its an easy fix", "UNLESS_EASY_FIX"],
+  ["unless easy fix", "UNLESS_EASY_FIX"],
+  ["easy fix", "EASY_FIX"],
+
+  ["what happens if", "Q_WHAT_HAPPENS"],
+  ["what happens", "Q_WHAT_HAPPENS"],
+  ["html code", "HTML_CODE"],
+
+  ["top box is fine", "TOP_BOX_OK"],
+  ["top box fine", "TOP_BOX_OK"],
+  ["has scroll bar", "SCROLLBAR_TRUE"],
+  ["scroll bar", "SCROLLBAR_TRUE"],
+  ["scrollbar", "SCROLLBAR_TRUE"],
+
+  ["bottom box expands downwards", "BOTTOM_BOX_EXPANDS_WRONG"],
+  ["bottom box expands downward", "BOTTOM_BOX_EXPANDS_WRONG"],
+  ["bottom box expands", "BOTTOM_BOX_EXPANDS_WRONG"],
+  ["should not do", "SHOULD_NOT"],
+  ["stay same size", "STATIC_SIZE"],
+  ["same size at all times", "STATIC_SIZE"],
+  ["function like the top one", "MATCH_TOP_BOX"],
+  ["bottom box should function", "BOTTOM_MATCH_TOP"],
+
+  ["make the code", "BUILD_CODE"],
+  ["make code", "BUILD_CODE"],
+  ["lets make that code", "BUILD_CODE"],
+  ["let's make that code", "BUILD_CODE"],
+  ["see what claude makes of it", "TEST_CLAUDE"],
+  ["what claude makes of it", "TEST_CLAUDE"],
+
   ["whole code", "FULL_CODE"],
-
-  ["make it smaller", "SIZE--"],
-  ["slightly smaller", "SIZE-"],
-  ["make it bigger", "SIZE++"],
-  ["slightly bigger", "SIZE+"],
-
-  ["move it up", "MOVE^"],
-  ["move it down", "MOVEv"],
-  ["move it left", "MOVE<"],
-  ["move it right", "MOVE>"],
-  ["higher", "Y+"],
-  ["lower", "Y-"],
-  ["closer", "Z+"],
-  ["further back", "Z-"],
-  ["too far forward", "Z-"],
-  ["too far back", "Z+"],
+  ["full code", "FULL_CODE"],
+  ["upload ready", "UPLOAD_READY"],
+  ["replace the whole", "REPLACE_ALL"],
 
   ["add undo", "UNDO+"],
   ["undo button", "UNDO+"],
@@ -87,22 +200,35 @@ const dictionary = [
   ["clear button", "CLEAR+"],
   ["done button", "DONE_BTN"],
 
-  ["restore copyright", "COPYRIGHT+"],
+  ["buttons can be smaller", "BUTTONS--"],
+  ["buttons smaller", "BUTTONS--"],
+  ["slightly smaller", "SIZE-"],
+  ["smaller still", "SIZE--"],
+
   ["copyright has gone", "COPYRIGHT+"],
   ["copyright hads gone", "COPYRIGHT+"],
+  ["copyright needs to go back", "COPYRIGHT+"],
+  ["restore copyright", "COPYRIGHT+"],
   ["keep the text", "KEEP_TEXT"],
   ["keep the footer", "KEEP_FOOTER"],
-  ["spell checker is not working", "SPELLCHECK_FIX"],
-  ["spell cheaker is not working", "SPELLCHECK_FIX"],
-  ["spellcheck is not working", "SPELLCHECK_FIX"],
 
-  ["dont rewrite", "NO_REWRITE"],
   ["do not rewrite", "NO_REWRITE"],
-  ["preserve intent", "INTENT=KEEP"],
+  ["dont rewrite", "NO_REWRITE"],
+  ["no rewrite", "NO_REWRITE"],
+  ["spell only", "SPELL_ONLY"],
   ["spelling only", "SPELL_ONLY"]
 ];
 
-function cleanText(text){
+const stopWords = new Set([
+  "a","an","and","are","as","at","be","but","by","can","could","do","does",
+  "for","from","had","has","have","here","i","if","in","is","it","its",
+  "just","like","me","my","of","on","or","please","really","so","some",
+  "that","the","then","there","this","to","we","what","when","where","who",
+  "why","will","with","you","your","also","need","needs","should","would",
+  "was","were","am","been","being","all","times","one","up","down"
+]);
+
+function normalise(text){
   return text
     .toLowerCase()
     .replace(/[’']/g,"")
@@ -111,48 +237,32 @@ function cleanText(text){
     .trim();
 }
 
-function compressLine(line){
-  let cleaned = cleanText(line);
-  let found = [];
+function removePhrase(text, phrase){
+  return text.replaceAll(phrase, " ").replace(/\s+/g," ").trim();
+}
 
-  dictionary.forEach(pair=>{
-    if(cleaned.includes(pair[0])){
-      if(!found.includes(pair[1])) found.push(pair[1]);
-      cleaned = cleaned.replace(pair[0]," ");
+function compressLine(line){
+  let working = normalise(line);
+  let output = [];
+
+  phraseMap.forEach(([phrase, code])=>{
+    if(working.includes(phrase)){
+      if(!output.includes(code)) output.push(code);
+      working = removePhrase(working, phrase);
     }
   });
 
-  cleaned = cleaned
-    .replace(/\bplease\b/g,"")
-    .replace(/\bcan\b/g,"")
-    .replace(/\byou\b/g,"")
-    .replace(/\bjust\b/g,"")
-    .replace(/\ba\b/g,"")
-    .replace(/\bthe\b/g,"")
-    .replace(/\bit\b/g,"")
-    .replace(/\bwe\b/g,"")
-    .replace(/\balso\b/g,"")
-    .replace(/\bneed\b/g,"")
-    .replace(/\bto\b/g,"")
-    .replace(/\band\b/g,"")
-    .replace(/\bas\b/g,"")
-    .replace(/\bi\b/g,"")
-    .replace(/\bthis\b/g,"")
-    .replace(/\bthat\b/g,"")
-    .replace(/\bsome\b/g,"")
-    .replace(/\btext\b/g,"")
-    .replace(/\s+/g," ")
-    .trim();
+  let remaining = working
+    .split(" ")
+    .filter(word => word && !stopWords.has(word))
+    .join("_")
+    .toUpperCase();
 
-  if(cleaned){
-    found.push(
-      cleaned
-      .toUpperCase()
-      .replace(/\s+/g,"_")
-    );
+  if(remaining && !output.includes(remaining)){
+    output.push(remaining);
   }
 
-  return found.join("\n");
+  return output;
 }
 
 function translateText(){
@@ -173,19 +283,16 @@ function translateText(){
   let result = [];
 
   lines.forEach(line=>{
-    const compressed = compressLine(line);
-    if(compressed) result.push(compressed);
+    result.push(...compressLine(line));
   });
 
+  result = [...new Set(result)];
+
   if(!result.length){
-    result.push("INTENT=UNCLEAR");
+    result.push("INTENT_UNCLEAR");
   }
 
-  result.push("NO_REWRITE");
-  result.push("SPELL_ONLY");
-
-  const finalText = [...new Set(result)].join("\n");
-
+  const finalText = result.join("\n");
   output.textContent = finalText;
 
   navigator.clipboard.writeText(finalText).then(()=>{
